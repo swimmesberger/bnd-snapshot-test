@@ -1,0 +1,37 @@
+plugins {
+  id 'biz.aQute.bnd.builder' version "5.2.0"
+  id 'application'
+}
+
+application {
+    mainClass = 'at.swimmesberger.Main'
+}
+
+group 'at.swimmesberger'
+def majorMinor = '1.0.0'
+version "${majorMinor}-SNAPSHOT"
+def osgiVersion = version
+if(hasProperty('release') && property('release')) {
+	version "${majorMinor}"
+	osgiVersion = "${majorMinor}.RELEASE"
+}
+
+println "Using osgi version ${osgiVersion} and project version ${project.version}"
+
+def bndOptions = [
+	"Export-Package": "*",
+	"Bundle-Version": "${osgiVersion}",
+	"-snapshot": 'BUILD-${tstamp}' //using bnd's snapshot interpolation here
+]
+jar {
+	bnd(bndOptions)
+}
+
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile group: 'biz.aQute.bnd', name: 'biz.aQute.bnd.gradle', version: '5.2.0'
+}
